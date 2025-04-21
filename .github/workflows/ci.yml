@@ -17,8 +17,8 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-        distribution: 'corretto'
-        java-version: '21'
+          distribution: 'corretto'
+          java-version: '21'
 
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
