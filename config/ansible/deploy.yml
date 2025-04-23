@@ -1,0 +1,43 @@
+- name: Local Blue-Green Deployment
+  hosts: localhost
+  vars:
+    color: "{{ lookup('env', 'COLOR') }}"
+    project_path: "{{ lookup('env', 'PROJECT_PATH') }}"
+    dest_base: "{{ lookup('env', 'DEPLOY_PATH') }}"
+
+  tasks:
+    - name: Find built JAR file
+      find:
+        paths: "{{ project_path }}/build/libs"
+        patterns: "*.jar"
+        recurse: no
+      register: found_jars
+
+    - name: Fail if no JAR found
+      fail:
+        msg: "No JAR file found in build/libs."
+      when: found_jars.matched == 0
+
+    - name: Pick latest JAR file
+      set_fact:
+        source_jar: "{{ (found_jars.files | sort(attribute='mtime'))[-1].path }}"
+
+    - name: Ensure target folder exists
+      file:
+        path: "{{ dest_base }}/midterm-{{ color }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy JAR to target folder
+      copy:
+        src: "{{ source_jar }}"
+        dest: "{{ dest_base }}/midterm-{{ color }}/midterm.jar"
+        mode: '0755'
+
+    - name: Stop current app (if running)
+      shell: ps -ef | grep -E -i -w "midterm-[0-9.]+(-SNAPSHOT)?.jar" | awk '{print $2}' |xargs kill
+      ignore_errors: yes
+
+    - name: Run new version
+      shell: |
+        cd {{ dest_base }}/midterm-{{ color }} && nohup java -jar midterm.jar > output.log 2>&1 &
