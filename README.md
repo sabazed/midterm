@@ -65,3 +65,9 @@ Firstly, this script loads environment variables from the `.env` file and valida
 6. If the health check fails, it rolls back the deployment by removing the newly created symbolic link and restoring the previous one. It also prints an error message and exits with a non-zero status code.
 
 All health check and application logs can be found in deployment folders. The application logs are stored in `green` and `blue` folders with name of `output.log`, while the health check logs are stored in `health-check.log` file.
+
+## 5. Screenshots
+Please refer to the `docs/SCREENSHOTS.md` file for screenshots of the pipeline execution and results.
+
+## 6. Pipeline Diagram
+![diagram.jpg](docs/imgs/diagram.jpg)
