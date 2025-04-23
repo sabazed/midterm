@@ -4,6 +4,7 @@
     color: "{{ lookup('env', 'COLOR') }}"
     project_path: "{{ lookup('env', 'PROJECT_PATH') }}"
     dest_base: "{{ lookup('env', 'DEPLOY_PATH') }}"
+    skip_build: "{{ lookup('env', 'SKIP_BUILD') | default('false') | bool }}"
 
   tasks:
     - name: Find built JAR file
@@ -12,15 +13,17 @@
         patterns: "*.jar"
         recurse: no
       register: found_jars
+      when: not skip_build
 
     - name: Fail if no JAR found
       fail:
         msg: "No JAR file found in build/libs."
-      when: found_jars.matched == 0
+      when: (not skip_build) and found_jars.matched == 0
 
     - name: Pick latest JAR file
       set_fact:
         source_jar: "{{ (found_jars.files | sort(attribute='mtime'))[-1].path }}"
+      when: not skip_build
 
     - name: Ensure target folder exists
       file:
@@ -33,9 +36,10 @@
         src: "{{ source_jar }}"
         dest: "{{ dest_base }}/midterm-{{ color }}/midterm.jar"
         mode: '0755'
+      when: not skip_build
 
     - name: Stop current app (if running)
-      shell: ps -ef | grep -E -i -w "midterm-[0-9.]+(-SNAPSHOT)?.jar" | awk '{print $2}' |xargs kill
+      shell: ps aux | grep -i midterm.jar | grep -v grep | awk {'print $2'} |xargs kill
       ignore_errors: yes
 
     - name: Run new version
