@@ -34,7 +34,7 @@ cd "$PROJECT_PATH" || exit 1
 echo "📦 Deploying $COLOR version with Ansible..."
 ansible-playbook "$PROJECT_PATH/config/ansible/deploy.yml" \
   -i "$PROJECT_PATH/config/ansible/hosts" \
-  --extra-vars "color=$COLOR project_path=$PROJECT_PATH deploy_path=$DEPLOY_PATH"
+  --extra-vars "color=$COLOR project_path=$PROJECT_PATH"
 
 echo "🔍 Performing health check..."
 bash "$PROJECT_PATH/config/scripts/health-check.sh"
@@ -51,7 +51,7 @@ else
   export COLOR=$OTHER_COLOR
   ansible-playbook "$PROJECT_PATH/config/ansible/deploy.yml" \
     -i "$PROJECT_PATH/config/ansible/hosts" \
-    --extra-vars "color=$COLOR project_path=$PROJECT_PATH deploy_path=$DEPLOY_PATH"
+    --extra-vars "color=$COLOR project_path=$PROJECT_PATH skip_build=true"
 
   echo "🔍 Retesting health..."
   bash "$PROJECT_PATH/config/scripts/health-check.sh"
