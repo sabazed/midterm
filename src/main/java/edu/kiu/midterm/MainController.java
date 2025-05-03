@@ -25,7 +25,7 @@ public class MainController {
 	@PostMapping("/form")
 	@ResponseBody
 	public String submit(@RequestParam("name") String name) {
-		return "Form submitted with name: " + name;
+		return "Form submitted with a name: " + name;
 	}
 
 	@GetMapping("/index")
