@@ -34,7 +34,7 @@ public class MainControllerTest {
 		mockMvc.perform(post("/form")
 						.param("name", "John"))
 				.andExpect(status().isOk())
-				.andExpect(content().string("Form submitted with name: John"));
+				.andExpect(content().string("Form submitted with a name: John"));
 	}
 
 }
