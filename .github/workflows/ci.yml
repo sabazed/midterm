@@ -7,24 +7,36 @@ on:
     branches: [ "dev", "master" ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - &checkout
+        name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - &setup-java
+        name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
           java-version: '21'
 
-      - name: Make Gradle wrapper executable
+      - &make-gradle-executable
+        name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
       - name: Build the project
         run: ./gradlew bootJar
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - *checkout
+      - *setup-java
+      - *make-gradle-executable
 
       - name: Run unit tests
         run: ./gradlew test
