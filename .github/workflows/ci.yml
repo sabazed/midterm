@@ -29,7 +29,6 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     needs: build
-    if: needs.build.outputs.skip-tests == 'false'
 
     steps:
       - name: Checkout code
